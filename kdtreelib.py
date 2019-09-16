@@ -42,26 +42,22 @@ class KDTree:
         return sqrt(reduce(lambda x,y: x + y, distances))
 
     def find_nearest_neighbor(self, search_node: Tuple[int, ...]):
-        return self._find_nearest_neighbor(search_node, self.root)
+        return self._find_nearest_neighbor(search_node, self.root, 0)
 
-    def _find_nearest_neighbor(self, search_node: Tuple[int, ...], root: KDNode) -> any:
+    def _find_nearest_neighbor(self, search_node: Tuple[int, ...], root: KDNode, depth: int) -> any:
         """
         Finds the nearest neighbor to the given node in the balanced tree
         """
-        min_distance: int = self.distance(root.value_mapping.point, search_node)
-        smallest_child = root
-
-        for curr_node in [root.left, root.right]:
-            breakpoint()
-            if curr_node is None:
-                continue
-
-            child_distance: int = self.distance(curr_node.value_mapping.point, search_node)
-            if child_distance < min_distance:
-                smallest_child = curr_node
-                min_distance = child_distance
-
-        if smallest_child == root:
+        if root.left is None and root.right is None:
             return root.value_mapping
 
-        return self._find_nearest_neighbor(search_node, smallest_child)
+        axis = depth % self.num_dimensions
+        if root.left is not None:
+            if root.left.value_mapping.point[axis] < search_node[axis]:
+                return self._find_nearest_neighbor(search_node, root.left, depth + 1)
+
+        if root.right is not None:
+            if root.right.value_mapping.point[axis] <= search_node[axis]:
+                return self._find_nearest_neighbor(search_node, root.right, depth + 1)
+
+        return root.value_mapping
