@@ -26,7 +26,6 @@ class KDNode:
 class KDTree:
     def __init__(self, num_dimensions: int, point_list: List[KDValueMapping]):
         self.num_dimensions = num_dimensions
-        self.tree_size = 0
         self.root = self._build_tree(point_list)
 
     def _build_tree(self, point_list: List[KDValueMapping], depth: int=0) -> KDNode:
@@ -37,7 +36,6 @@ class KDTree:
         point_list.sort(key=lambda x: x.point[axis])
 
         median = len(point_list) // 2
-        self.tree_size += 1
         return KDNode(
             value=point_list[median],
             left=self._build_tree(point_list[:median], depth + 1),
